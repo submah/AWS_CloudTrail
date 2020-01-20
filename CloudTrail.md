@@ -19,7 +19,8 @@ globalVars['tagName']               = "c4clouds"
 
 globalVars['security_group_id']     = os.environ['security_group_id']
 
-#========================================================
+#==============================================
+
 def lambda_handler(event, context):
     print(event)
 
@@ -42,7 +43,8 @@ def lambda_handler(event, context):
 
         #boto3.client('sns').publish( TargetArn = os.environ['sns_topic_arn'], Message = message, Subject = "Auto-mitigation successful" )
 
-#=====================================================================
+#==================================================
+
 def revoke_security_group_ingress(event_detail):
     request_parameters = event_detail['requestParameters']
 
@@ -63,7 +65,8 @@ def revoke_security_group_ingress(event_detail):
     return result
 
 
-#===================================================================
+#===============================================
+
 def normalize_paramter_names(ip_items):
     #Start building the permissions items list.
     new_ip_items = []
