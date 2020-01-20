@@ -7,7 +7,7 @@
 3. Create an IAM Role for Lambda with ec2 full access 
 
 # Step 1 Create a Lambda function (Runtime environment is Python 2.7)
-
+```python
 import os, json, boto3
 
 #Set the global variables
@@ -18,8 +18,6 @@ globalVars['REGION_NAME']           = "us-east-1"
 globalVars['tagName']               = "c4clouds"
 
 globalVars['security_group_id']     = os.environ['security_group_id']
-
-#==============================================
 
 def lambda_handler(event, context):
     print(event)
@@ -43,7 +41,6 @@ def lambda_handler(event, context):
 
         #boto3.client('sns').publish( TargetArn = os.environ['sns_topic_arn'], Message = message, Subject = "Auto-mitigation successful" )
 
-#==================================================
 
 def revoke_security_group_ingress(event_detail):
     request_parameters = event_detail['requestParameters']
@@ -63,9 +60,7 @@ def revoke_security_group_ingress(event_detail):
     result['ip_permissions'] = ip_permissions
 
     return result
-
-
-#===============================================
+```
 
 def normalize_paramter_names(ip_items):
     #Start building the permissions items list.
@@ -82,7 +77,7 @@ def normalize_paramter_names(ip_items):
 
         #CidrIp or CidrIpv6 (IPv4 or IPv6)?
         if 'ipv6Ranges' in ip_item and ip_item['ipv6Ranges']:
-            #This is an IPv6 permission range, so change the key names.
+            # This is an IPv6 permission range, so change the key names.
             ipv_range_list_name = 'ipv6Ranges'
             ipv_address_value = 'cidrIpv6'
             ipv_range_list_name_capitalized = 'Ipv6Ranges'
@@ -107,7 +102,7 @@ def normalize_paramter_names(ip_items):
 
     return new_ip_items
     
-  # Step 2 Configure Lambda Trigger
+# Step 2 Configure Lambda Trigger
   
   # We are going to use Cloudwatch Events that will be triggered by CloudTrail API
 
@@ -121,7 +116,7 @@ def normalize_paramter_names(ip_items):
       5. Enable Trigger by Checking the box
       6. Click on Add and Save the Lambda Function
       
- # Step 3 - Checking the Events
+# Step 3 - Checking the Events
  Navigate to the EC2 console and choose Security Groups and Choose the security group that we are monitoring. Add a new Inbound rule, for example SSH on port 22 from 0.0.0.0/0.
 
 Adding this rule creates an EC2 AuthorizeSecurityGroupIngress service event, which triggers the Lambda function.
