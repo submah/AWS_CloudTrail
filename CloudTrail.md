@@ -10,7 +10,7 @@
 
 import os, json, boto3
 
-# Set the global variables
+#Set the global variables
 globalVars  = {}
 globalVars['Owner']                 = "Subrat"
 globalVars['Environment']           = "Dev"
@@ -19,17 +19,17 @@ globalVars['tagName']               = "c4clouds"
 
 globalVars['security_group_id']     = os.environ['security_group_id']
 
-# ===============================================================================
+#========================================================
 def lambda_handler(event, context):
     print(event)
 
     print globalVars['security_group_id']
-    # Ensure that we have an event name to evaluate.
+    #Ensure that we have an event name to evaluate.
     if 'detail' not in event or ('detail' in event and 'eventName' not in event['detail']):
         return {"Result": "Failure", "Message": "Lambda not triggered by an event"}
 
-    # Remove the rule only if the event was to authorize the ingress rule for the given
-    # security group id is one provided in the Environment Variables.
+    #Remove the rule only if the event was to authorize the ingress rule for the given
+    #security group id is one provided in the Environment Variables.
     if (event['detail']['eventName'] == 'AuthorizeSecurityGroupIngress' and
             event['detail']['requestParameters']['groupId'] == globalVars['security_group_id']):
         result = revoke_security_group_ingress(event['detail'])
@@ -40,13 +40,13 @@ def lambda_handler(event, context):
             json.dumps(result['ip_permissions'])
         )
 
-        # boto3.client('sns').publish( TargetArn = os.environ['sns_topic_arn'], Message = message, Subject = "Auto-mitigation successful" )
+        #boto3.client('sns').publish( TargetArn = os.environ['sns_topic_arn'], Message = message, Subject = "Auto-mitigation successful" )
 
-# ===============================================================================
+#=====================================================================
 def revoke_security_group_ingress(event_detail):
     request_parameters = event_detail['requestParameters']
 
-    # Build the normalized IP permission JSON struture.
+    #Build the normalized IP permission JSON struture.
     ip_permissions = normalize_paramter_names(request_parameters['ipPermissions']['items'])
 
     response = boto3.client('ec2').revoke_security_group_ingress(
@@ -54,7 +54,7 @@ def revoke_security_group_ingress(event_detail):
         IpPermissions=ip_permissions
     )
 
-    # Build the result
+    #Build the result
     result = {}
     result['group_id'] = request_parameters['groupId']
     result['user_name'] = event_detail['userIdentity']['arn']
@@ -63,12 +63,12 @@ def revoke_security_group_ingress(event_detail):
     return result
 
 
-# ===============================================================================
+#===================================================================
 def normalize_paramter_names(ip_items):
-    # Start building the permissions items list.
+    #Start building the permissions items list.
     new_ip_items = []
 
-    # First, build the basic parameter list.
+    #First, build the basic parameter list.
     for ip_item in ip_items:
 
         new_ip_item = {
@@ -77,9 +77,9 @@ def normalize_paramter_names(ip_items):
             "ToPort": ip_item['toPort']
         }
 
-        # CidrIp or CidrIpv6 (IPv4 or IPv6)?
+        #CidrIp or CidrIpv6 (IPv4 or IPv6)?
         if 'ipv6Ranges' in ip_item and ip_item['ipv6Ranges']:
-            # This is an IPv6 permission range, so change the key names.
+            #This is an IPv6 permission range, so change the key names.
             ipv_range_list_name = 'ipv6Ranges'
             ipv_address_value = 'cidrIpv6'
             ipv_range_list_name_capitalized = 'Ipv6Ranges'
@@ -92,7 +92,7 @@ def normalize_paramter_names(ip_items):
 
         ip_ranges = []
 
-        # Next, build the IP permission list.
+        #Next, build the IP permission list.
         for item in ip_item[ipv_range_list_name]['items']:
             ip_ranges.append(
                 {ipv_address_value_capitalized: item[ipv_address_value]}
