@@ -1,4 +1,4 @@
-# Get Notification Automatically when a specifig Security Gruop get modified and Lambda function will revert the change(s).
+# Get Notification Automatically when a specefic Security Gruop get modified then, Lambda function will revert the change(s).
 
 
 # Pre-Requisities
