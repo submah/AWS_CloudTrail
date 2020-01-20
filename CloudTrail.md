@@ -60,7 +60,6 @@ def revoke_security_group_ingress(event_detail):
     result['ip_permissions'] = ip_permissions
 
     return result
-```
 
 def normalize_paramter_names(ip_items):
     #Start building the permissions items list.
@@ -101,6 +100,7 @@ def normalize_paramter_names(ip_items):
         new_ip_items.append(new_ip_item)
 
     return new_ip_items
+ ```
     
 # Step 2 Configure Lambda Trigger
   
